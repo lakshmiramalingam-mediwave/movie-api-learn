@@ -21,7 +21,7 @@ function AddForm() {
 
   async function handleAddMovie(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-     toggleModal();
+    toggleModal();
     try {
       const moviePayload = {
         title: movie.title,
@@ -30,10 +30,9 @@ function AddForm() {
       const response = await addMovie(moviePayload);
       console.log(response);
       setShowModalMsg({
-        action: "Sucessfully ",
+        action: "Successfully ",
         msg: "Added",
       });
-      navigate("/");
     } catch (error) {
       if (error instanceof Error) {
         console.error("Error adding movie:", error);
@@ -49,7 +48,10 @@ function AddForm() {
     setMovie({ ...movie, [name]: value });
     console.log(movie);
   }
-
+  function closeModal() {
+    toggleModal();
+    navigate("/");
+  }
   return (
     <>
       <Layout title="addForm">
@@ -87,7 +89,7 @@ function AddForm() {
                   aria-label="Close"
                   className="close"
                   data-target="modal-example"
-                  onClick={toggleModal}
+                  onClick={closeModal}
                 ></a>
                 <h3>{showModalMsg.action}</h3>
                 <p>{showModalMsg.msg}</p>

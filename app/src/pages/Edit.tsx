@@ -43,13 +43,16 @@ const EditForm: React.FC<IEditForm> = ({ movie }) => {
         action: " sucessfully ",
         msg: "edited",
       });
-      navigate("/");
     } catch (error) {
       console.log(error);
     }
   }
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+  }
+  function closeModal() {
+    toggleModal();
+    navigate("/");
   }
   return (
     <>
@@ -95,7 +98,7 @@ const EditForm: React.FC<IEditForm> = ({ movie }) => {
                       aria-label="Close"
                       className="close"
                       data-target="modal-example"
-                      onClick={toggleModal}
+                      onClick={closeModal}
                     ></a>
                     <h3>{showModalMsg.action}</h3>
                     <p>{showModalMsg.msg}</p>

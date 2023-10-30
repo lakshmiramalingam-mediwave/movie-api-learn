@@ -5,6 +5,7 @@ import Layout from "../components/Layout";
 import { IMovie, IShowError } from "../components/type";
 
 import "@picocss/pico";
+import LoadingIcon from "../components/Loading/LoadingIcon";
 
 interface IHome {
   handleEdit: (movie: IMovie) => void;
@@ -43,12 +44,14 @@ const Home: React.FC<IHome> = ({ handleEdit }) => {
   async function handleDelete(id: number) {
     toggleModal();
     try {
-      setRefresh(true);
       await deleteMovie(id);
       setShowModalMsg({
         action: "Sucessfully Deleted",
         msg: "deleted",
       });
+      // setRefresh(true);
+
+      setRefresh((prev) => !prev);
     } catch (error) {
       if (error instanceof Error) {
         console.error("Error deleting movie:", error);
@@ -57,8 +60,6 @@ const Home: React.FC<IHome> = ({ handleEdit }) => {
           msg: error.message,
         });
       }
-    } finally {
-      setRefresh(false);
     }
   }
   return (
@@ -73,7 +74,7 @@ const Home: React.FC<IHome> = ({ handleEdit }) => {
             disabled={isLoading}
             onClick={() => setRefresh((prev) => !prev)}
           >
-            refresh list
+            {isLoading ? <LoadingIcon /> : <>refresh list</>}
           </button>
           {isLoading ? (
             <p>Loading movies!</p>
