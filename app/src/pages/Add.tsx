@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
-import Layout from "../components/layout";
+import Layout from "../components/Layout";
 import { addMovie } from "../services/api";
 import { useState } from "react";
+import { IShowError } from "../components/type";
 
 function AddForm() {
   const navigate = useNavigate();
@@ -9,9 +10,18 @@ function AddForm() {
     title: "",
     year: 0,
   });
+  const [showModal, setShowModal] = useState(false);
+  const [showModalMsg, setShowModalMsg] = useState<IShowError>({
+    action: "",
+    msg: "",
+  });
+  const toggleModal = () => {
+    setShowModal((prevShowModal) => !prevShowModal);
+  };
 
   async function handleAddMovie(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+     toggleModal();
     try {
       const moviePayload = {
         title: movie.title,
@@ -19,10 +29,19 @@ function AddForm() {
       };
       const response = await addMovie(moviePayload);
       console.log(response);
+      setShowModalMsg({
+        action: "Sucessfully ",
+        msg: "Added",
+      });
       navigate("/");
     } catch (error) {
-      console.log("Errored");
-      console.log(error);
+      if (error instanceof Error) {
+        console.error("Error adding movie:", error);
+        setShowModalMsg({
+          action: "Failed",
+          msg: error.message,
+        });
+      }
     }
   }
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -60,6 +79,21 @@ function AddForm() {
             />
           </label>
           <button type="submit">add movie</button>
+          {showModal && (
+            <dialog open>
+              <article>
+                <a
+                  href="#close"
+                  aria-label="Close"
+                  className="close"
+                  data-target="modal-example"
+                  onClick={toggleModal}
+                ></a>
+                <h3>{showModalMsg.action}</h3>
+                <p>{showModalMsg.msg}</p>
+              </article>
+            </dialog>
+          )}
         </form>
       </Layout>
     </>

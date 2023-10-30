@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getMovies, deleteMovie } from "../services/api";
-import Layout from "../components/layout";
-import { IMovie, IShowError } from "../components/types";
+import Layout from "../components/Layout";
+import { IMovie, IShowError } from "../components/type";
 
 import "@picocss/pico";
 
@@ -43,9 +43,10 @@ const Home: React.FC<IHome> = ({ handleEdit }) => {
   async function handleDelete(id: number) {
     toggleModal();
     try {
+      setRefresh(true);
       await deleteMovie(id);
       setShowModalMsg({
-        action: "Succes",
+        action: "Sucessfully Deleted",
         msg: "deleted",
       });
     } catch (error) {
@@ -55,13 +56,9 @@ const Home: React.FC<IHome> = ({ handleEdit }) => {
           action: "Failed",
           msg: error.message,
         });
-      } else {
-        console.error("An unknown error occurred:", error);
-        setShowModalMsg({
-          action: "failed",
-          msg: "An unknown error occurred.",
-        });
       }
+    } finally {
+      setRefresh(false);
     }
   }
   return (
