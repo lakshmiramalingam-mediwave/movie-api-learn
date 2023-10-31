@@ -19,7 +19,7 @@ const Home: React.FC<IHome> = ({ handleEdit }) => {
     action: "",
     msg: "",
   });
-
+  const [loadingId, setLoadingId] = useState<number | null>(null);
   const toggleModal = () => {
     setShowModal((prevShowModal) => !prevShowModal);
   };
@@ -42,7 +42,8 @@ const Home: React.FC<IHome> = ({ handleEdit }) => {
     getMoviesFromAPI();
   }, [refresh]);
   async function handleDelete(id: number) {
-    toggleModal();
+    setLoadingId(id);
+    setIsLoading(true);
     try {
       await deleteMovie(id);
       setShowModalMsg({
@@ -60,6 +61,9 @@ const Home: React.FC<IHome> = ({ handleEdit }) => {
           msg: error.message,
         });
       }
+    } finally {
+      toggleModal();
+      setIsLoading(false);
     }
   }
   return (
@@ -76,40 +80,46 @@ const Home: React.FC<IHome> = ({ handleEdit }) => {
           >
             {isLoading ? <LoadingIcon /> : <>refresh list</>}
           </button>
-          {isLoading ? (
-            <p>Loading movies!</p>
-          ) : (
-            <div className="grid">
-              {movies.map((m) => (
-                <article key={m.id}>
-                  <h1>{m.title}</h1>
-                  <h3>{m.year}</h3>
 
-                  <div className="grid">
-                    <Link to={`/edit/${m.id}`}>
-                      <button onClick={() => handleEdit(m)}>Edit</button>
-                    </Link>
-                    <button onClick={() => handleDelete(m.id)}>delete</button>
-                    {showModal && (
-                      <dialog open>
-                        <article>
-                          <a
-                            href="#close"
-                            aria-label="Close"
-                            className="close"
-                            data-target="modal-example"
-                            onClick={toggleModal}
-                          ></a>
-                          <h3>{showModalMsg.action}</h3>
-                          <p>{showModalMsg.msg}</p>
-                        </article>
-                      </dialog>
-                    )}
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
+          <div className="grid">
+            {movies.map((m) => (
+              <article key={m.id}>
+                <h1>{m.title}</h1>
+                <h3>{m.year}</h3>
+
+                <div className="grid">
+                  <Link to={`/edit/${m.id}`}>
+                    <button onClick={() => handleEdit(m)}>Edit</button>
+                  </Link>
+                  {/* <button onClick={() => handleDelete(m.id)}>
+                      {" "}
+                      {isLoading ? <LoadingIcon /> : <>delete</>}delete
+                    </button> */} 
+                  <button
+                    disabled={isLoading}
+                    onClick={() => handleDelete(m.id)}
+                  >
+                    {loadingId === m.id ? <LoadingIcon /> : <>Delete</>}
+                  </button>
+                  {showModal && (
+                    <dialog open>
+                      <article>
+                        <a
+                          href="#close"
+                          aria-label="Close"
+                          className="close"
+                          data-target="modal-example"
+                          onClick={toggleModal}
+                        ></a>
+                        <h3>{showModalMsg.action}</h3>
+                        <p>{showModalMsg.msg}</p>
+                      </article>
+                    </dialog>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
         </div>
       </Layout>
     </>

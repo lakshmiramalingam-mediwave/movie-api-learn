@@ -3,6 +3,7 @@ import Layout from "../components/Layout";
 import { addMovie } from "../services/api";
 import { useState } from "react";
 import { IShowError } from "../components/type";
+import LoadingIcon from "../components/Loading/LoadingIcon";
 
 function AddForm() {
   const navigate = useNavigate();
@@ -18,10 +19,11 @@ function AddForm() {
   const toggleModal = () => {
     setShowModal((prevShowModal) => !prevShowModal);
   };
+  const [isLoading, setIsLoading] = useState(false);
 
   async function handleAddMovie(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    toggleModal();
+    setIsLoading(true);
     try {
       const moviePayload = {
         title: movie.title,
@@ -41,6 +43,9 @@ function AddForm() {
           msg: error.message,
         });
       }
+    } finally {
+      toggleModal();
+      setIsLoading(false);
     }
   }
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -80,7 +85,11 @@ function AddForm() {
               required
             />
           </label>
-          <button type="submit">add movie</button>
+          <button type="submit" disabled={isLoading}>
+            {" "}
+            {isLoading ? <LoadingIcon /> : <>add movie</>}
+          </button>
+
           {showModal && (
             <dialog open>
               <article>
